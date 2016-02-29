@@ -1,0 +1,19 @@
+{
+  "shade": {
+    "id": 494,
+    "name": "U2hhZGUgMTE=",
+    "roomId": 22215,
+    "groupId": 15903,
+    "order": 9,
+    "type": 8,
+    "timedOut": false,
+    "batteryStrength": 185,
+    "batteryStatus": 3,
+    "positions": {
+      "position1": 43189,
+      "posKind1": 1,
+      "position2": 8653,
+      "posKind2": 2
+    }
+  }
+}
