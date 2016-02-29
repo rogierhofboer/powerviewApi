@@ -1,170 +1,132 @@
 [
     {
         "scenes": {
-            "sceneData": [],
-            "sceneIds": []
-        },
-        "hubname": "M25T PV Test",
-        "address": "192.168.0.100"
-    },
-    {
-        "scenes": {
-            "sceneData": [
-                {
-                    "id": 4068,
-                    "networkNumber": 3,
-                    "iconId": 31,
-                    "order": 0,
-                    "roomId": 18241,
-                    "colorId": 2,
-                    "name": "Alles dicht"
-                },
-                {
-                    "id": 15924,
-                    "networkNumber": 0,
-                    "iconId": 103,
-                    "order": 1,
-                    "roomId": 18241,
-                    "colorId": 3,
-                    "name": "20% looptijd"
-                },
-                {
-                    "id": 8008,
-                    "networkNumber": 1,
-                    "iconId": 144,
-                    "order": 2,
-                    "roomId": 18241,
-                    "colorId": 5,
-                    "name": "50% looptijd"
-                },
-                {
-                    "id": 45098,
-                    "networkNumber": 2,
-                    "iconId": 133,
-                    "order": 3,
-                    "roomId": 18241,
-                    "colorId": 7,
-                    "name": "75% looptijd"
-                },
-                {
-                    "id": 25394,
-                    "networkNumber": 4,
-                    "iconId": 113,
-                    "order": 4,
-                    "roomId": 18241,
-                    "colorId": 9,
-                    "name": "Alles open"
-                },
-                {
-                    "id": 12744,
-                    "networkNumber": 5,
-                    "iconId": 99,
-                    "order": 5,
-                    "roomId": 18241,
-                    "colorId": 8,
-                    "name": "Test"
-                }
-            ],
-            "sceneIds": [
-                4068,
-                15924,
-                8008,
-                45098,
-                25394,
-                12744
-            ]
-        },
-        "hubname": "Office EC rollo",
-        "address": "192.168.0.111"
-    },
-    {
-        "scenes": {
-            "sceneData": [
-                {
-                    "id": 52252,
-                    "networkNumber": 0,
-                    "iconId": 66,
-                    "order": 0,
-                    "roomId": 34037,
-                    "colorId": 2,
-                    "name": "Avond"
-                },
-                {
-                    "id": 23805,
-                    "networkNumber": 1,
-                    "iconId": 66,
-                    "order": 1,
-                    "roomId": 56159,
-                    "colorId": 7,
-                    "name": "Avond"
-                },
-                {
-                    "id": 8008,
-                    "networkNumber": 2,
-                    "iconId": 95,
-                    "order": 2,
-                    "roomId": 34037,
-                    "colorId": 2,
-                    "name": "Overdag"
-                },
-                {
-                    "id": 36455,
-                    "networkNumber": 3,
-                    "iconId": 95,
-                    "order": 3,
-                    "roomId": 56159,
-                    "colorId": 7,
-                    "name": "Overdag"
-                },
-                {
-                    "id": 21420,
-                    "networkNumber": 4,
-                    "iconId": 0,
-                    "order": 4,
-                    "roomId": 56159,
-                    "colorId": 0,
-                    "name": "Gelijk"
-                },
-                {
-                    "id": 39581,
-                    "networkNumber": 5,
-                    "iconId": 0,
-                    "order": 5,
-                    "roomId": 22215,
-                    "colorId": 0,
-                    "name": "Test1"
-                },
-                {
-                    "id": 30925,
-                    "networkNumber": 6,
-                    "iconId": 0,
-                    "order": 6,
-                    "roomId": 22215,
-                    "colorId": 0,
-                    "name": "Close"
-                },
-                {
-                    "id": 46688,
-                    "networkNumber": 7,
-                    "iconId": 0,
-                    "order": 7,
-                    "roomId": 56159,
-                    "colorId": 7,
-                    "name": "Bert sluiten"
-                }
-            ],
             "sceneIds": [
                 52252,
                 23805,
                 8008,
-                36455,
                 21420,
                 39581,
                 30925,
-                46688
+                46688,
+                58543,
+                33310,
+                27745,
+                58576,
+                9632
+            ],
+            "sceneData": [
+                {
+                    "order": 0,
+                    "colorId": 2,
+                    "iconId": 66,
+                    "id": 52252,
+                    "networkNumber": 0,
+                    "name": "Avond",
+                    "roomId": 34037
+                },
+                {
+                    "order": 1,
+                    "colorId": 7,
+                    "iconId": 66,
+                    "id": 23805,
+                    "networkNumber": 1,
+                    "name": "Avond",
+                    "roomId": 56159
+                },
+                {
+                    "order": 2,
+                    "colorId": 2,
+                    "iconId": 95,
+                    "id": 8008,
+                    "networkNumber": 2,
+                    "name": "Overdag",
+                    "roomId": 34037
+                },
+                {
+                    "order": 3,
+                    "colorId": 0,
+                    "iconId": 0,
+                    "id": 21420,
+                    "networkNumber": 4,
+                    "name": "Gelijk",
+                    "roomId": 56159
+                },
+                {
+                    "order": 4,
+                    "colorId": 0,
+                    "iconId": 0,
+                    "id": 39581,
+                    "networkNumber": 5,
+                    "name": "Test1",
+                    "roomId": 22215
+                },
+                {
+                    "order": 5,
+                    "colorId": 0,
+                    "iconId": 0,
+                    "id": 30925,
+                    "networkNumber": 6,
+                    "name": "Close",
+                    "roomId": 22215
+                },
+                {
+                    "order": 6,
+                    "colorId": 7,
+                    "iconId": 0,
+                    "id": 46688,
+                    "networkNumber": 7,
+                    "name": "Bert sluiten",
+                    "roomId": 56159
+                },
+                {
+                    "order": 7,
+                    "colorId": 0,
+                    "iconId": 0,
+                    "id": 58543,
+                    "networkNumber": 3,
+                    "name": "W09 close",
+                    "roomId": 22215
+                },
+                {
+                    "order": 8,
+                    "colorId": 0,
+                    "iconId": 0,
+                    "id": 33310,
+                    "networkNumber": 8,
+                    "name": "Open",
+                    "roomId": 11188
+                },
+                {
+                    "order": 9,
+                    "colorId": 0,
+                    "iconId": 0,
+                    "id": 27745,
+                    "networkNumber": 9,
+                    "name": "Close",
+                    "roomId": 11188
+                },
+                {
+                    "order": 10,
+                    "colorId": 0,
+                    "iconId": 0,
+                    "id": 58576,
+                    "networkNumber": 10,
+                    "name": "Tilt open",
+                    "roomId": 11188
+                },
+                {
+                    "order": 11,
+                    "colorId": 0,
+                    "iconId": 0,
+                    "id": 9632,
+                    "networkNumber": 11,
+                    "name": "Tilt close",
+                    "roomId": 11188
+                }
             ]
         },
         "hubname": "Office EC M&C",
-        "address": "192.168.0.117"
+        "address": "192.168.0.106"
     }
 ]

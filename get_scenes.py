@@ -7,6 +7,7 @@ from powerview import PowerView
 
 
 def create_scripts(pvs):
+    check_for_folder()
     empty_scripts_folder()
     for hub in hubs:
         for scene in hub['scenes']['sceneData']:
@@ -20,6 +21,11 @@ def create_scripts(pvs):
                 fl.write("requests.get('http://{}/api/scenes?sceneid={}')".format(hub['address'],
                                                                                   str(scene['id'])))
 
+def check_for_folder():
+    try:
+        os.mkdir("scripts")
+    except FileExistsError:
+        print("folder already exists. Proceeding...")
 
 def empty_scripts_folder():
     filelist = [f for f in os.listdir(SCRIPT_FOLDER) if f.startswith("script")]
