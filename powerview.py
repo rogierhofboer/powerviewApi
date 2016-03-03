@@ -1,45 +1,68 @@
+"""
+Powerview api
+"""
+
 import base64
 import json
 import pprint
 
-__author__ = 'sander'
-
 import requests
 
-
-def decode_base64(str):
-    return base64.b64decode(str).decode('utf-8')
+__author__ = 'sander'
 
 
-class PowerView():
+def decode_base64(string):
+    """
+    Converts base64 to unicode
+    """
+    return base64.b64decode(string).decode('utf-8')
+
+
+class PowerView:
+    """
+    The power view class representing one powerview hub with a
+    unique ip address
+    """
     def __init__(self, ip_address):
         self.ip_address = ip_address
         self.base_path = "http://{}/api".format(ip_address)
-        self.scenes_path = "{}/scenes/".format(self.base_path)
-        self.shades_path = "{}/shades/".format(self.base_path)
+        self.scenes_path = "{}/scenes".format(self.base_path)
+        self.shades_path = "{}/shades".format(self.base_path)
 
     def get_user_data(self):
-        _user_data = "{}/userdata/".format(self.base_path)
-        r = requests.get(_user_data)
-        dta = r.json()
+        """gets user data"""
+        _str = "{}/userdata/".format(self.base_path)
+        _user = requests.get(_str)
+        dta = _user.json()
         dta["userData"]["hubName"] = decode_base64(dta["userData"]["hubName"])
         return dta
 
     def get_scenes(self):
-        print("requesting : {}".format(self.scenes_path))
-        # headers={'Content-Type':"application/json",'user-agent':'test-app'}
-        r = requests.get(self.scenes_path)
-        dta = r.json()
+        """get scenes"""
+        dta = requests.get(self.scenes_path).json()
         for scene in dta['sceneData']:
-            # str = base64.b64decode(scene['name'])
             scene['name'] = decode_base64(scene['name'])
-            # print("Scene : id: {} -- name: {}".format(scene['id'], scene['name']))
-            # pprint.pprint(dta)
         return dta
 
-    def set_blind(self, id, position):
-        url = "{}{}/".format(self.shades_path, id)
-        dta = {"shade": {"id": id, "positions": {"posKind1": 1, "position1": position}}}
+    def activate_scene(self, scene_id):
+        """
+
+        :param scene_id:
+         The id of the scene
+        :return:
+        """
+        _scene_path = "{}?sceneid={}".format(self.scenes_path, scene_id)
+        requests.get(_scene_path)
+
+    def set_blind(self, blind_id, position):
+        """
+
+        :param blind_id:
+        :param position:
+        :return:
+        """
+        url = "{}{}/".format(self.shades_path, blind_id)
+        dta = {"shade": {"blind_id": blind_id, "positions": {"posKind1": 1, "position1": position}}}
         print("moving shade")
         print("address: {}".format(url))
         print("data:")

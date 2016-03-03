@@ -12,8 +12,8 @@ def create_scripts(pvs):
     for hub in hubs:
         for scene in hub['scenes']['sceneData']:
             with open("{}/script_{}_{}.py".format(SCRIPT_FOLDER,
-                                               hub["hubname"],
-                                               scene['name']), 'w') as fl:
+                                                  hub["hubname"],
+                                                  scene['name']), 'w') as fl:
                 fl.write("import requests\n")
                 # requests.get("http://192.168.0.117/api/scenes?sceneid=58509")
                 fl.write("\n")
@@ -21,16 +21,18 @@ def create_scripts(pvs):
                 fl.write("requests.get('http://{}/api/scenes?sceneid={}')".format(hub['address'],
                                                                                   str(scene['id'])))
 
+
 def check_for_folder():
     try:
         os.mkdir("scripts")
     except FileExistsError:
         print("folder already exists. Proceeding...")
 
+
 def empty_scripts_folder():
     filelist = [f for f in os.listdir(SCRIPT_FOLDER) if f.startswith("script")]
     for f in filelist:
-        os.remove(os.path.join(SCRIPT_FOLDER,f))
+        os.remove(os.path.join(SCRIPT_FOLDER, f))
 
 
 if __name__ == "__main__":
