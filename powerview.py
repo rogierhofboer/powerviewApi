@@ -5,7 +5,6 @@ Powerview api
 import base64
 import json
 import pprint
-
 import requests
 
 __author__ = 'sander'
