@@ -27,6 +27,7 @@ class PowerView:
         self.base_path = "http://{}/api".format(ip_address)
         self.scenes_path = "{}/scenes".format(self.base_path)
         self.shades_path = "{}/shades".format(self.base_path)
+        self.rooms_path = "{}/rooms".format(self.base_path)
 
     def get_user_data(self):
         """gets user data"""
@@ -35,6 +36,16 @@ class PowerView:
         dta = _user.json()
         dta["userData"]["hubName"] = decode_base64(dta["userData"]["hubName"])
         return dta
+
+    def get_rooms(self):
+        """
+        gets room data
+        :return:
+        """
+        _room_data = requests.get(self.rooms_path).json()
+        for room in _room_data["roomData"]:
+            room["name"] = decode_base64(room["name"])
+        return _room_data
 
     def get_scenes(self):
         """get scenes"""
