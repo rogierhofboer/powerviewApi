@@ -1,7 +1,12 @@
 from distutils.core import setup
 
 setup(
-    name='powerview_api',
+    name='powerviewApi',
     version='0.2',
-    author='sander'
+    packages=[''],
+    url='',
+    license='',
+    author='sander',
+    author_email='',
+    description=''
 )
