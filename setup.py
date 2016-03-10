@@ -3,10 +3,6 @@ from distutils.core import setup
 setup(
     name='powerviewApi',
     version='0.2',
-    packages=[''],
-    url='',
-    license='',
+    py_modules=['powerview'],
     author='sander',
-    author_email='',
-    description=''
 )
