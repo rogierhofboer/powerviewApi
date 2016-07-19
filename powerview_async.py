@@ -1,11 +1,9 @@
 """
 Powerview api
 """
-
-import base64
-import json
+import asyncio
 import pprint
-import requests
+import aiohttp
 
 from decode import decode_base64
 from powerviewbase import PowerViewBase
@@ -13,25 +11,30 @@ from powerviewbase import PowerViewBase
 __author__ = 'sander'
 
 
-
-
-class PowerView:
+class PowerViewAsync:
     """
     The power view class representing one powerview hub with a
     unique ip address
     """
 
-    def __init__(self, ip_address):
+    def __init__(self, ip_address, session):
         self.pvb = PowerViewBase(ip_address)
+        self.session = session
 
+    @asyncio.coroutine
     def get_user_data(self):
         """gets user data"""
         _str = self.pvb.get_user_data()
-        _user = requests.get(_str)
-        dta = _user.json()
-        dta["userData"]["hubName"] = decode_base64(dta["userData"]["hubName"])
-        return dta
+        resp = self.session.get(_str)
+        assert resp.status == 200
+        try:
+            dta = yield from resp.json()
+            dta["userData"]["hubName"] = decode_base64(dta["userData"]["hubName"])
+            return dta
+        finally:
+            yield from resp.release()
 
+    @asyncio.coroutine
     def get_rooms(self):
         """
         gets room data
@@ -51,11 +54,16 @@ class PowerView:
           ]
         }
         """
-        _room_data = requests.get(self.pvb.rooms_path).json()
-        for room in _room_data["roomData"]:
-            room["name"] = decode_base64(room["name"])
-        return _room_data
+        resp =self.session.get(self.pvb.rooms_path)
+        try:
+            _room_data = yield from resp.json()
+            for room in _room_data["roomData"]:
+                room["name"] = decode_base64(room["name"])
+            return _room_data
+        finally:
+            yield from resp.release()
 
+    @asyncio.coroutine
     def get_scenes(self):
         """get scenes
 
@@ -98,11 +106,16 @@ class PowerView:
           ]
         }
         """
-        dta = requests.get(self.pvb.scenes_path).json()
-        for scene in dta['sceneData']:
-            scene['name'] = decode_base64(scene['name'])
-        return dta
+        resp = yield from self.session.get(self.pvb.scenes_path)
+        try:
+            dta = yield from resp.json()
+            for scene in dta['sceneData']:
+                scene['name'] = decode_base64(scene['name'])
+            return dta
+        finally:
+            yield from resp.release()
 
+    @asyncio.coroutine
     def activate_scene(self, scene_id):
         """
 
@@ -111,8 +124,11 @@ class PowerView:
         :return:
         """
         _scene_path = self.pvb.get_activate_scene_path(scene_id)
-        requests.get(_scene_path)
+        resp = self.session.get(_scene_path)
+        yield from resp.release()
+        return
 
+    @asyncio.coroutine
     def set_blind(self, blind_id, position):
         """
 
@@ -125,11 +141,19 @@ class PowerView:
         print("address: {}".format(url))
         print("data:")
         pprint.pprint(dta)
-        r = requests.put(url, data=json.dumps(dta))
-        pprint.pprint(r.json())
+        resp = self.session.put(url,data=dta)
+        try:
+            r = yield from resp.json()
+            # pprint.pprint(r.json())
+            return r
+        finally:
+            yield from resp.release()
 
 
 if __name__ == "__main__":
-    pv = PowerView("192.168.0.117")
-    pv.get_scenes()
+    loop = asyncio.get_event_loop()
+    session = aiohttp.ClientSession(loop=loop)
+    pv = PowerViewAsync("192.168.2.4", session)
+    loop.run_until_complete(pv.get_scenes())
+    session.close()
     # pv.set_blind(52214, 30000)
