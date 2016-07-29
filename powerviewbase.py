@@ -18,7 +18,7 @@ class PowerViewBase:
         return _scene_path
 
     def get_blind_path_url(self, blind_id):
-        url = "{}{}/".format(self.shades_path, blind_id)
+        url = "{}/{}".format(self.shades_path, blind_id)
         return url
 
     def get_jog_body(self):
