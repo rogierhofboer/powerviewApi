@@ -1,9 +1,8 @@
 """
-Powerview api
+Powerview asyncio api
 """
 import asyncio
 import logging
-import pprint
 import aiohttp
 
 from decode import decode_base64
@@ -146,8 +145,8 @@ class PowerViewAsync:
     @asyncio.coroutine
     def jog_shade(self, blind_id):
         url = self.pvb.get_blind_path_url(blind_id)
-        jog_body = self.pvb.get_jog_body()
-        resp = yield from self.session.put(url, data=jog_body)
+        body = self.pvb.get_jog_body()
+        resp = yield from self.session.put(url, data=body)
         try:
             assert resp.status == 200
         finally:
@@ -156,7 +155,6 @@ class PowerViewAsync:
     @asyncio.coroutine
     def set_blind(self, blind_id, position):
         """
-
         :param blind_id:
         :param position:
         :return:
@@ -179,7 +177,7 @@ if __name__ == "__main__":
     lgr.level = logging.DEBUG
     loop = asyncio.get_event_loop()
     session = aiohttp.ClientSession(loop=loop)
-    pv = PowerViewAsync("192.168.2.5", session)
-    loop.run_until_complete(pv.get_shades())
+    pv = PowerViewAsync("192.168.0.104", session)
+    loop.run_until_complete(pv.jog_shade(51650))
     session.close()
     # pv.set_blind(52214, 30000)

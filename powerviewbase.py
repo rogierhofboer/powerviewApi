@@ -1,3 +1,5 @@
+import json
+
 from decode import decode_base64
 
 
@@ -22,12 +24,15 @@ class PowerViewBase:
         return url
 
     def get_jog_body(self):
-        return {'shade': {'motion': 'jog'}}
+        return json.dumps({'shade': {'motion': 'jog'}})
+
+    def get_position_body(self, position, blind_id):
+        json.dumps({"shade": {"blind_id": blind_id, "positions": {"posKind1": 1, "position1": position}}})
 
     def get_activate_blind_data(self, blind_id, position):
         url = self.get_blind_path_url(blind_id)
-        dta = {"shade": {"blind_id": blind_id, "positions": {"posKind1": 1, "position1": position}}}
-        return (url, dta)
+        body = self.get_position_body(position, blind_id)
+        return (url, body)
 
     def sanitize_shades(self, shades):
         for shade in shades['shadeData']:

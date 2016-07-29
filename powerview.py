@@ -127,11 +127,12 @@ class PowerView:
         :return:
         """
         url, dta = self.pvb.get_activate_blind_data(blind_id, position)
-        r = requests.put(url, data=json.dumps(dta))
+        r = requests.put(url, data=dta)
         pprint.pprint(r.json())
 
 
 if __name__ == "__main__":
-    pv = PowerView("192.168.0.117")
-    pv.get_scenes()
+    pv = PowerView("192.168.0.104")
+    #pv.get_scenes()
+    pv.jog_shade(51650)
     # pv.set_blind(52214, 30000)
