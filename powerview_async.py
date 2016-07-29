@@ -12,6 +12,7 @@ from powerviewbase import PowerViewBase
 __author__ = 'sander'
 lgr = logging.getLogger(__name__)
 
+
 class PowerViewAsync:
     """
     The power view class representing one powerview hub with a
@@ -55,7 +56,7 @@ class PowerViewAsync:
           ]
         }
         """
-        resp =yield from self.session.get(self.pvb.rooms_path)
+        resp = yield from self.session.get(self.pvb.rooms_path)
         try:
             _room_data = yield from resp.json()
             for room in _room_data["roomData"]:
@@ -119,25 +120,36 @@ class PowerViewAsync:
     @asyncio.coroutine
     def activate_scene(self, scene_id):
         """
-
         :param scene_id:
          The id of the scene
         :return:
         """
         _scene_path = self.pvb.get_activate_scene_path(scene_id)
         resp = yield from self.session.get(_scene_path)
-        yield from resp.release()
-        return
+        try:
+            assert resp.status == 200
+        finally:
+            yield from resp.release()
 
     @asyncio.coroutine
     def get_shades(self):
         resp = yield from self.session.get(self.pvb.shades_path)
-        assert resp.status == 200
         try:
+            assert resp.status == 200
             js = yield from resp.json()
             self.pvb.sanitize_shades(js)
             lgr.debug(js)
             return js
+        finally:
+            yield from resp.release()
+
+    @asyncio.coroutine
+    def jog_shade(self, blind_id):
+        url = self.pvb.get_blind_path_url(blind_id)
+        jog_body = self.pvb.get_jog_body()
+        resp = yield from self.session.put(url, data=jog_body)
+        try:
+            assert resp.status == 200
         finally:
             yield from resp.release()
 
@@ -153,8 +165,8 @@ class PowerViewAsync:
         print("moving shade")
         print("address: {}".format(url))
         print("data:")
-        #pprint.pprint(dta)
-        resp = yield from self.session.put(url,data=dta)
+        # pprint.pprint(dta)
+        resp = yield from self.session.put(url, data=dta)
         try:
             r = yield from resp.json()
             # pprint.pprint(r.json())
@@ -164,10 +176,10 @@ class PowerViewAsync:
 
 
 if __name__ == "__main__":
-    lgr.level=logging.DEBUG
+    lgr.level = logging.DEBUG
     loop = asyncio.get_event_loop()
     session = aiohttp.ClientSession(loop=loop)
-    pv = PowerViewAsync("192.168.2.4", session)
+    pv = PowerViewAsync("192.168.2.5", session)
     loop.run_until_complete(pv.get_shades())
     session.close()
     # pv.set_blind(52214, 30000)

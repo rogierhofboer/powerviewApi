@@ -24,6 +24,7 @@ class PowerView:
     def __init__(self, ip_address):
         self.pvb = PowerViewBase(ip_address)
 
+
     def get_user_data(self):
         """gets user data"""
         _str = self.pvb.get_user_data()
@@ -113,6 +114,11 @@ class PowerView:
         _scene_path = self.pvb.get_activate_scene_path(scene_id)
         requests.get(_scene_path)
 
+    def jog_shade(self,blind_id):
+        url = self.pvb.get_blind_path_url(blind_id)
+        r = requests.put(url,self.pvb.get_jog_body())
+        return r.status_code
+
     def set_blind(self, blind_id, position):
         """
 
@@ -121,10 +127,6 @@ class PowerView:
         :return:
         """
         url, dta = self.pvb.get_activate_blind_data(blind_id, position)
-        print("moving shade")
-        print("address: {}".format(url))
-        print("data:")
-        pprint.pprint(dta)
         r = requests.put(url, data=json.dumps(dta))
         pprint.pprint(r.json())
 
