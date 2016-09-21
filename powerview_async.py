@@ -156,7 +156,7 @@ class PowerViewAsync:
     def set_blind(self, blind_id, position):
         """
         :param blind_id:
-        :param position:
+        :param position: value between 0 and 65535
         :return:
         """
         url, dta = self.pvb.get_activate_blind_data(blind_id, position)

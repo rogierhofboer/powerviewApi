@@ -36,4 +36,4 @@ class PowerViewBase:
 
     def sanitize_shades(self, shades):
         for shade in shades['shadeData']:
-            shade['name'] = decode_base64(shade['name'])
+            shade['name'] = decode_base64(shade.get('name',''))
