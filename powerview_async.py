@@ -153,13 +153,13 @@ class PowerViewAsync:
             yield from resp.release()
 
     @asyncio.coroutine
-    def set_blind(self, blind_id, position):
+    def set_blind(self, blind_id, position,positionkind):
         """
         :param blind_id:
         :param position: value between 0 and 65535
         :return:
         """
-        url, dta = self.pvb.get_activate_blind_data(blind_id, position)
+        url, dta = self.pvb.get_activate_blind_data(blind_id, position,positionkind)
         print("moving shade")
         print("address: {}".format(url))
         print("data:")

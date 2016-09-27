@@ -6,13 +6,12 @@ import base64
 import json
 import pprint
 import requests
+import time
 
 from decode import decode_base64
 from powerviewbase import PowerViewBase
 
 __author__ = 'sander'
-
-
 
 
 class PowerView:
@@ -23,7 +22,6 @@ class PowerView:
 
     def __init__(self, ip_address):
         self.pvb = PowerViewBase(ip_address)
-
 
     def get_user_data(self):
         """gets user data"""
@@ -114,25 +112,33 @@ class PowerView:
         _scene_path = self.pvb.get_activate_scene_path(scene_id)
         requests.get(_scene_path)
 
-    def jog_shade(self,blind_id):
+    def jog_shade(self, blind_id):
         url = self.pvb.get_blind_path_url(blind_id)
-        r = requests.put(url,self.pvb.get_jog_body())
+        r = requests.put(url, self.pvb.get_jog_body())
         return r.status_code
 
-    def set_blind(self, blind_id, position):
+    def get_shades(self):
+        url = self.pvb.get_shades()
+        r = requests.get(url).json()
+        self.pvb.sanitize_shades(r)
+        return r
+
+    def set_blind(self, blind_id, position,positionkind):
         """
 
         :param blind_id:
         :param position: value between 0 and 65535
         :return:
         """
-        url, dta = self.pvb.get_activate_blind_data(blind_id, position)
+        url, dta = self.pvb.get_activate_blind_data(blind_id, position,positionkind)
         r = requests.put(url, data=dta)
-        pprint.pprint(r.json())
+        #pprint.pprint(r.json())
+        return r
 
 
 if __name__ == "__main__":
-    pv = PowerView("192.168.0.104")
-    #pv.get_scenes()
-    pv.jog_shade(51650)
-    # pv.set_blind(52214, 30000)
+    pv = PowerView("192.168.0.106")
+    #pv.set_blind('7271',0,3)
+    pv.set_blind('7271', 0, 1)
+    time.sleep(1)
+    pv.jog_shade('7271')
