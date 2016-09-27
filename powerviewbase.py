@@ -26,14 +26,17 @@ class PowerViewBase:
     def get_jog_body(self):
         return json.dumps({'shade': {'motion': 'jog'}})
 
-    def get_position_body(self, position, blind_id):
-        json.dumps({"shade": {"blind_id": blind_id, "positions": {"posKind1": 1, "position1": position}}})
+    def get_position_body(self, position, blind_id,positionkind):
+        return json.dumps({"shade": {"blind_id": blind_id, "positions": {"posKind1": positionkind, "position1": position}}})
 
-    def get_activate_blind_data(self, blind_id, position):
+    def get_activate_blind_data(self, blind_id, position,positionkind):
         url = self.get_blind_path_url(blind_id)
-        body = self.get_position_body(position, blind_id)
+        body = self.get_position_body(position, blind_id,positionkind)
         return (url, body)
 
     def sanitize_shades(self, shades):
         for shade in shades['shadeData']:
-            shade['name'] = decode_base64(shade.get('name',''))
+            shade['name'] = decode_base64(shade.get('name', ''))
+
+    def get_shades(self):
+        return self.shades_path
