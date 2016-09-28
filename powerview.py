@@ -132,13 +132,12 @@ class PowerView:
         """
         url, dta = self.pvb.get_activate_blind_data(blind_id, position,positionkind)
         r = requests.put(url, data=dta)
-        #pprint.pprint(r.json())
-        return r
+        return r.json()
 
 
 if __name__ == "__main__":
     pv = PowerView("192.168.0.106")
     #pv.set_blind('7271',0,3)
-    pv.set_blind('7271', 0, 1)
+    print(pv.set_blind('7271', 0, 1))
     time.sleep(1)
     pv.jog_shade('7271')
