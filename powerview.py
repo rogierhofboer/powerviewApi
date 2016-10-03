@@ -123,6 +123,11 @@ class PowerView:
         self.pvb.sanitize_shades(r)
         return r
 
+    def get_shade_data(self,shade_id,update_battery_level=False):
+        url = self.pvb.get_shade_data(shade_id,update_battery_level)
+        r = requests.get(url).json()
+        return r
+
     def set_blind(self, blind_id, position,positionkind):
         """
 

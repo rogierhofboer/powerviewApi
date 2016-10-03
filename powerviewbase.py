@@ -30,6 +30,12 @@ class PowerViewBase:
         return json.dumps(
             {"shade": {"blind_id": blind_id, "positions": {"posKind1": positionkind, "position1": position}}})
 
+    def get_shade_data(self, shade_id, update_battery_level):
+        if not update_battery_level:
+            return "{}/{}".format(self.shades_path, shade_id)
+        else:
+            return "{}/{}?updateBatteryLevel=true".format(self.shades_path, shade_id)
+
     def get_activate_blind_data(self, blind_id, position, positionkind):
         url = self.get_blind_path_url(blind_id)
         body = self.get_position_body(position, blind_id, positionkind)
