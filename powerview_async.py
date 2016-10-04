@@ -55,7 +55,7 @@ class PowerViewAsync:
           ]
         }
         """
-        resp = yield from self.session.get(self.pvb.rooms_path)
+        resp = yield from self.session.get(self.pvb._rooms_path)
         try:
             _room_data = yield from resp.json()
             for room in _room_data["roomData"]:
@@ -107,7 +107,7 @@ class PowerViewAsync:
           ]
         }
         """
-        resp = yield from self.session.get(self.pvb.scenes_path)
+        resp = yield from self.session.get(self.pvb._scenes_path)
         try:
             dta = yield from resp.json()
             for scene in dta['sceneData']:
@@ -132,7 +132,7 @@ class PowerViewAsync:
 
     @asyncio.coroutine
     def get_shades(self):
-        resp = yield from self.session.get(self.pvb.shades_path)
+        resp = yield from self.session.get(self.pvb._shades_path)
         try:
             assert resp.status == 200
             js = yield from resp.json()
@@ -159,7 +159,7 @@ class PowerViewAsync:
         :param position: value between 0 and 65535
         :return:
         """
-        url, dta = self.pvb.get_activate_blind_data(blind_id, position,positionkind)
+        url, dta = self._get_activate_blind_data(blind_id, position,positionkind)
         print("moving shade")
         print("address: {}".format(url))
         print("data:")
