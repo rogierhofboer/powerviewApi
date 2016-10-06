@@ -258,8 +258,8 @@ class BaseShadeType3(BaseShade):
         self.position1_perc = 0
         self.position2 = 0
         self.position2_perc = 0
-        self.pos2openposition = MAXMOVEPOSITION  # open meaning middle bar is at the top position.
-        self.pos2closeposition = 0  # close meaning middle bar is at the bottom position.
+        self.pos2openposition = 0  # open meaning middle bar is at the top position.
+        self.pos2closeposition = MAXMOVEPOSITION  # close meaning middle bar is at the bottom position.
 
     def move1(self,position1,percentage=False):
         self.move(position1,None,percentage=percentage)
