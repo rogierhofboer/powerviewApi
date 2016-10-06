@@ -1,6 +1,10 @@
 import json
 
+import math
+import logging
 from decode import decode_base64
+
+JOG_DATA = json.dumps({"shade": {"motion": "jog"}})
 
 
 class PowerViewBase:
@@ -11,7 +15,10 @@ class PowerViewBase:
         self._shades_path = "{}/shades".format(self._base_path)
         self._rooms_path = "{}/rooms".format(self._base_path)
         self._user_path = "{}/userdata/".format(self._base_path)
-        self._jog_body = {"shade": {"motion": "jog"}}
+
+        self.type1_shades = [6]
+        self.type2_shades = [23, 44]
+        self.type3_shades = [8]
 
     def move_blind(self, blind_id, position, positionkind):
         raise NotImplemented
@@ -54,7 +61,7 @@ class PowerViewBase:
 
     def _get_position_body(self, position, blind_id, positionkind):
         return json.dumps(
-            {"shade": {"blind_id": blind_id, "positions": {"posKind1": positionkind, "position1": position}}})
+            {"shade": {"id": blind_id, "positions": {"posKind1": positionkind, "position1": position}}})
 
     def _get_shade_data(self, shade_id):
         return "{}/{}".format(self._shades_path, shade_id)
@@ -75,26 +82,187 @@ class PowerViewBase:
     def sanitize_user_data(self, userdata):
         userdata["userData"]["hubName"] = decode_base64(userdata["userData"]["hubName"])
 
+    def get_shade_class_name(self, shade_type):
+        raise NotImplemented
+
+
+lgr = logging.getLogger(__name__)
+
+MAXMOVEPOSITION = 65535
+MAXTILTPOSITION = 32767
+
+
+def to_percentage_position(value, base=MAXMOVEPOSITION):
+    """
+    Will convert a PowerView position value to a value between 0 and 100.
+
+    :param value: the position received from the powerview API.
+    :param base: normally two bytes. On occasions this can change.
+    :return: percentage value
+    """
+    _multiplier = 100.0 / base
+    percentage = math.ceil(value * _multiplier)
+    return percentage
+
+
+def to_powerview_position(percentage, base=MAXMOVEPOSITION):
+    """
+    Will convert a percentage position value to a value from 0 to base.
+    :param percentage:
+    :param base:
+    :return: powerview position value
+    """
+    if percentage == None:
+        return None
+    _multiplier = base / 100.0
+
+    value = math.ceil(percentage * _multiplier)
+    return value
+
 
 class BaseShade:
     def __init__(self, name, shade_id, shades_api_path):
         self.name = name
         self.shade_id = shade_id
         self.shade_api_path = "{}/{}".format(shades_api_path, shade_id)
+        self.pos1openposition = MAXMOVEPOSITION
+        self.pos1closeposition = 0
+        self.base = max(self.pos1openposition, self.pos1closeposition)
+
+    def jog(self):
+        raise NotImplemented
+
+    def process_response(self, response):
+        raise NotImplemented
+
+    def open(self):
+        raise NotImplemented
+
+    def close(self):
+        raise NotImplemented
+
+    def update(self):
+        raise NotImplemented
+
+    def get_update_data(self):
+        return {"refresh": True}
 
 
-class ShadeType1(BaseShade):
+# url = self._get_shade_data(shade_id)
+#     r = requests.get(url, params={"refresh": force_refresh}).json()
+#     return r
+
+class BaseShadeType1(BaseShade):
     """
     A basic "up" down "shade"
     """
-    def __init__(self,name,shade_id,shades_api_path):
-        BaseShade.__init__(self,name,shade_id,shades_api_path)
 
-    def move1(self,position):
-        pass
+    def __init__(self, name, shade_id, shades_api_path):
+        BaseShade.__init__(self, name, shade_id, shades_api_path)
+        self.position1 = 0
+        self.position1_perc = 0
+
+    def _get_move_data(self, position, percentage=False):
+        if percentage:
+            position = to_powerview_position(position)
+        return {"shade": {"id": self.shade_id, "positions": {"posKind1": 1, "position1": position}}}
+
+    def process_response(self, response):
+        _position_kind = response.get('shade').get('positions').get('posKind1')
+        _position = response.get('shade').get('positions').get('position1')
+
+        if _position_kind == 1:
+            self.position1 = _position
+            self.position1_perc = to_percentage_position(_position)
+            lgr.debug("Blind positions: position1: {}".format(self.position1))
 
 
+class BaseShadeType2(BaseShade):
+    """
+    A tilt at the bottom type of shade.
+    """
 
-class ShadeType2(BaseShade):
-    def __init__(self):
-        pass
+    def __init__(self, name, shade_id, shades_api_path):
+        BaseShade.__init__(self, name, shade_id, shades_api_path)
+        self.position1 = 0  # the movement position
+        self.position1_perc = 0
+        self.position2 = 0  # the tilt position
+        self.position2_perc = 0
+        self.tiltopenposition = MAXTILTPOSITION
+        self.tiltcloseposition = 0
+
+    def _get_move_data(self, position=None, tilt=None, percentage=False):
+        if percentage:
+            position = to_powerview_position(position)
+            tilt = to_powerview_position(tilt, self.tiltopenposition)
+        if position is None:
+            return {"shade": {"id": self.shade_id,
+                              "positions": {"posKind1": 3, "position1": tilt}}}
+        else:
+            return {"shade": {"id": self.shade_id,
+                              "positions": {"posKind1": 1, "position1": position}}}
+
+    def process_response(self, response):
+        _position_kind = response.get('shade').get('positions').get('posKind1')
+        _position = response.get('shade').get('positions').get('position1')
+
+        if _position_kind == 1:
+            self.position1 = _position
+            self.position1_perc = to_percentage_position(_position)
+            self.position2 = 0
+            self.position2_perc = 0
+            lgr.debug("Blind positions: position1: {}  position2: {}".
+                      format(self.position1, self.position2))
+        elif _position_kind == 3:
+            self.position1 = 0
+            self.position2 = _position
+            self.position2_perc = to_percentage_position(_position, base=MAXTILTPOSITION)
+            lgr.debug("Blind positions: position1: {}  position2: {}".
+                      format(self.position1, self.position2))
+        else:
+            lgr.debug("No position feedback from blind ")
+
+
+class BaseShadeType3(BaseShade):
+    """
+    Like a top down bottom up shade
+    """
+
+    def __init__(self, name, shade_id, shades_api_path):
+        BaseShade.__init__(self, name, shade_id, shades_api_path)
+        self.position1 = 0
+        self.position1_perc = 0
+        self.position2 = 0
+        self.position2_perc = 0
+        self.pos2openposition = MAXMOVEPOSITION
+        self.pos2closeposition = 0
+
+    def _get_move_data(self, position1=None, position2=None, percentage=False):
+        if percentage:
+            position1 = to_powerview_position(position1)
+            position2 = to_powerview_position(position2)
+        if position1 is None:
+            position1 = self.position1
+        if position2 is None:
+            position2 = self.position2
+
+        return {"shade": {"id": self.shade_id,
+                          "positions": {"posKind1": 1, "position1": position1,
+                                        "posKind2": 2, "position2": position2}}}
+
+    def process_response(self, response):
+        _position_kind = response.get('shade').get('positions').get('posKind1')
+        _position = response.get('shade').get('positions').get('position1')
+
+        if _position_kind == 1:
+            self.position1 = _position
+            self.position1_perc = to_percentage_position(_position)
+            lgr.debug("Blind positions: position1: {}".format(self.position1))
+
+        _position_kind2 = response.get('shade').get('positions').get('posKind2')
+        _position2 = response.get('shade').get('positions').get('position2')
+
+        if _position_kind2 == 2:
+            self.position2 = _position2
+            self.position2_perc = to_percentage_position(_position2)
+            lgr.debug("Blind positions: position2: {}".format(self.position2))

@@ -9,7 +9,8 @@ import requests
 import time
 
 from decode import decode_base64
-from powerviewbase import PowerViewBase
+from powerviewbase import PowerViewBase, BaseShadeType1
+from shades import ShadeType1, ShadeType3, ShadeType2
 
 __author__ = 'sander'
 
@@ -86,38 +87,62 @@ class PowerView(PowerViewBase):
         _scene_path = self._get_activate_scene_data(scene_id)
         requests.get(_scene_path)
 
-    def jog_shade(self, shade_id):
-        url, body = self._get_jog_data(shade_id)
-        r = requests.put(url, body)
-        return r.status_code
+    # def jog_shade(self, shade_id):
+    #     url, body = self._get_jog_data(shade_id)
+    #     r = requests.put(url, body)
+    #     return r.status_code
 
     def get_shades(self):
         r = requests.get(self._shades_path).json()
         self.sanitize_shades(r)
         return r
 
-    def get_shade_data(self, shade_id, update_battery_level=None, force_refresh=None):
-        url = self._get_shade_data(shade_id)
-        r = requests.get(url, params={"refresh": force_refresh}).json()
-        return r
+    # def get_shade_data(self, shade_id, update_battery_level=None, force_refresh=None):
+    #     url = self._get_shade_data(shade_id)
+    #     r = requests.get(url, params={"refresh": force_refresh}).json()
+    #     return r
 
-    def move_blind(self, blind_id, position, positionkind):
-        """
+    # def move_blind(self, blind_id, position, positionkind):
+    #     """
+    #
+    #     :param blind_id:
+    #     :param position: value between 0 and 65535
+    #     :return:
+    #     """
+    #     url, dta = self._get_activate_blind_data(blind_id, position, positionkind)
+    #     r = requests.put(url, data=dta)
+    #     return r.json()
 
-        :param blind_id:
-        :param position: value between 0 and 65535
-        :return:
-        """
-        url, dta = self._get_activate_blind_data(blind_id, position, positionkind)
-        r = requests.put(url, data=dta)
-        return r.json()
-
+    def shade_factory(self, shadedata):
+        _name = shadedata["name"]
+        _id = shadedata["id"]
+        _type = shadedata["type"]
+        if _type in self.type1_shades:
+            return ShadeType1(_name, _id, self._shades_path)
+        elif _type in self.type2_shades:
+            return ShadeType2(_name,_id,self._shades_path)
+        elif _type in self.type3_shades:
+            return ShadeType3(_name, _id, self._shades_path)
+        else:
+            return ShadeType1(_name, _id, self._shades_path)
 
 if __name__ == "__main__":
     import pprint
 
-    # pv = PowerView("192.168.0.106")
-    pv = PowerView("192.168.2.4")
-    pprint.pprint(pv.get_shades())
+    pv = PowerView("192.168.0.106")
+    # pv = PowerView("192.168.2.4")
+    shades = pv.get_shades()
+    pprint.pprint(shades)
+    _shade = next((shade for shade in shades["shadeData"] if shade["id"] == 32653))
+    shade = pv.shade_factory(_shade)
+    #shade.close()
+    shade.move(None,shade.tiltcloseposition)
+
+    # shade = pv.shade_factory(shades["shadeData"][0])
+    # shade.jog()
+    # shade.move(shade.pos1openposition,shade.pos2openposition)
+    # shade.open()
+    # shade.move2(1000)
+    # shade.move(1000,10000)
     # pv.set_blind('7271',0,3)
-    pprint.pprint(pv.get_shade_data('11155', force_refresh=True)['shade'])
+    # pprint.pprint(pv.get_shade_data('11155', force_refresh=True)['shade'])
