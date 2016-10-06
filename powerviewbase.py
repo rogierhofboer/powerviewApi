@@ -200,6 +200,18 @@ class BaseShadeType2(BaseShade):
     def move2(self,position2,percentage=False):
         self.move(None,position2,percentage=percentage)
 
+    def open(self):
+        self.move(self.pos1openposition,None)
+
+    def close(self):
+        self.move(self.pos1closeposition,None)
+
+    def open2(self):
+        self.move(None,self.tiltopenposition)
+
+    def close2(self):
+        self.move(None,self.tiltcloseposition)
+
     def move(self,position1,tilt,percentage=False):
         raise NotImplemented
 
@@ -255,6 +267,18 @@ class BaseShadeType3(BaseShade):
     def move2(self,position2,percentage=False):
         self.move(None,position2,percentage=percentage)
 
+    def open(self):
+        #body = self._get_move_data(self.pos1openposition, self.pos2closeposition)
+        self.move(self.pos1openposition,self.pos2openposition)
+
+    def close(self):
+        self.move(self.pos1closeposition, self.pos2closeposition)
+
+    def open2(self):
+        self.move(None,self.pos2openposition)
+
+    def close2(self):
+        self.move(None,self.pos2closeposition)
 
     def _get_move_data(self, position1=None, position2=None, percentage=False):
         if percentage:

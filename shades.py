@@ -59,14 +59,6 @@ class ShadeType2(BaseShadeType2):
     def move(self, position, tilt, percentage=False):
         return self._get_move_data(position, tilt, percentage)
 
-    @putt
-    def open(self):
-        return self._get_move_data(self.pos1openposition)
-
-    @putt
-    def close(self):
-        return self._get_move_data(self.pos1closeposition)
-
 
 class ShadeType3(BaseShadeType3):
     def __init__(self, name, shade_id, shades_api_path):
@@ -76,16 +68,6 @@ class ShadeType3(BaseShadeType3):
     @gett
     def update(self):
         return self.get_update_data()
-
-    @putt
-    def open(self):
-        body = self._get_move_data(self.pos1openposition, self.pos2closeposition)
-        return body
-
-    @putt
-    def close(self):
-        body = self._get_move_data(self.pos1closeposition, self.pos2closeposition)
-        return body
 
     @putt
     def move(self, position1, position2,percentage=False):
