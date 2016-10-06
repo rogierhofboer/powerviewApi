@@ -258,8 +258,8 @@ class BaseShadeType3(BaseShade):
         self.position1_perc = 0
         self.position2 = 0
         self.position2_perc = 0
-        self.pos2openposition = MAXMOVEPOSITION
-        self.pos2closeposition = 0
+        self.pos2openposition = MAXMOVEPOSITION  # open meaning middle bar is at the top position.
+        self.pos2closeposition = 0  # close meaning middle bar is at the bottom position.
 
     def move1(self,position1,percentage=False):
         self.move(position1,None,percentage=percentage)
@@ -268,11 +268,10 @@ class BaseShadeType3(BaseShade):
         self.move(None,position2,percentage=percentage)
 
     def open(self):
-        #body = self._get_move_data(self.pos1openposition, self.pos2closeposition)
-        self.move(self.pos1openposition,self.pos2openposition)
+        self.move(self.pos1openposition,None)
 
     def close(self):
-        self.move(self.pos1closeposition, self.pos2closeposition)
+        self.move(self.pos1closeposition, None)
 
     def open2(self):
         self.move(None,self.pos2openposition)
