@@ -162,6 +162,9 @@ class BaseShadeType1(BaseShade):
         self.position1 = 0
         self.position1_perc = 0
 
+    def move1(self,position1,percentage=False):
+        self.move(position1,percentage=percentage)
+
     def _get_move_data(self, position, percentage=False):
         if percentage:
             position = to_powerview_position(position)
@@ -190,6 +193,15 @@ class BaseShadeType2(BaseShade):
         self.position2_perc = 0
         self.tiltopenposition = MAXTILTPOSITION
         self.tiltcloseposition = 0
+
+    def move1(self,position1,percentage=False):
+        self.move(position1,None,percentage=percentage)
+
+    def move2(self,position2,percentage=False):
+        self.move(None,position2,percentage=percentage)
+
+    def move(self,position1,tilt,percentage=False):
+        raise NotImplemented
 
     def _get_move_data(self, position=None, tilt=None, percentage=False):
         if percentage:
@@ -236,6 +248,13 @@ class BaseShadeType3(BaseShade):
         self.position2_perc = 0
         self.pos2openposition = MAXMOVEPOSITION
         self.pos2closeposition = 0
+
+    def move1(self,position1,percentage=False):
+        self.move(position1,None,percentage=percentage)
+
+    def move2(self,position2,percentage=False):
+        self.move(None,position2,percentage=percentage)
+
 
     def _get_move_data(self, position1=None, position2=None, percentage=False):
         if percentage:
