@@ -1,10 +1,7 @@
 import argparse
 import cmd
 
-from model import powerview
-
-
-#from powerview import PowerView
+from model.powerview import PowerView
 
 
 class PV(cmd.Cmd):
@@ -13,7 +10,7 @@ class PV(cmd.Cmd):
 
     def __init__(self, ip_address):
         cmd.Cmd.__init__(self)
-        self.pv = powerview.PowerView(ip_address)
+        self.pv = PowerView(ip_address)
 
     def get_shade(self,shade_id):
         try:
