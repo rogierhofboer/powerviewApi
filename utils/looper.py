@@ -1,3 +1,4 @@
+import argparse
 import json
 import time
 
@@ -11,7 +12,10 @@ def cycleshade(_shades):
         yield shade
 
 if __name__ == "__main__":
-    with open("looper.json", 'r') as fl:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_file")
+    args = parser.parse_args()
+    with open(args.config_file, 'r') as fl:
         js = json.load(fl)
 
     shade_ids = js['shade_ids']

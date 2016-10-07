@@ -1,0 +1,10 @@
+[Unit]
+Description=PV looper
+After=network.target
+
+[Service]
+User=sander
+ExecStart=/home/pi/venvs/powerviewApi/bin/python /home/pi/powerviewApi/utils/looper.py "/home/pi/powerviewApi/utils/looper.json"
+
+[Install]
+WantedBy=multi-user.target
