@@ -3,10 +3,11 @@ Powerview asyncio api
 """
 import asyncio
 import logging
+
 import aiohttp
 
-from decode import decode_base64
-from powerviewbase import PowerViewBase
+from model.decode import decode_base64
+from model.powerviewbase import PowerViewBase
 
 __author__ = 'sander'
 lgr = logging.getLogger(__name__)

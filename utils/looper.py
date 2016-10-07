@@ -1,8 +1,10 @@
 import argparse
 import json
-import time
-from .. import powerview
 import logging
+import time
+
+from model import powerview
+
 WAIT_BETWEEN_SHADES=1
 logging.basicConfig(level=logging.DEBUG)
 

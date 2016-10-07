@@ -1,7 +1,8 @@
 import json
 
-from powerviewbase import BaseShadeType1, BaseShadeType3, JOG_DATA, BaseShadeType2
 import requests
+
+from model.powerviewbase import BaseShadeType1, BaseShadeType3, JOG_DATA, BaseShadeType2
 
 
 def jog(shade_api_path):

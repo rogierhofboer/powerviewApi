@@ -1,7 +1,9 @@
 import argparse
 import cmd
 
-from .. import powerview
+from model import powerview
+
+
 #from powerview import PowerView
 
 

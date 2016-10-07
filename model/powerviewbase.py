@@ -1,8 +1,8 @@
 import json
-
-import math
 import logging
-from decode import decode_base64
+import math
+
+from model.decode import decode_base64
 
 JOG_DATA = json.dumps({"shade": {"motion": "jog"}})
 
