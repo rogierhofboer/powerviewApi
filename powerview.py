@@ -2,11 +2,7 @@
 Powerview api
 """
 
-import base64
-import json
-import pprint
 import requests
-import time
 
 from decode import decode_base64
 from powerviewbase import PowerViewBase, BaseShadeType1
@@ -92,26 +88,18 @@ class PowerView(PowerViewBase):
     #     r = requests.put(url, body)
     #     return r.status_code
 
+    def define_all_shades(self):
+        shades = self.get_shades()
+        self.all_shades=[]
+        for shade in shades["shadeData"]:
+            self.all_shades.append(self.shade_factory(shade))
+
+
     def get_shades(self):
         r = requests.get(self._shades_path).json()
         self.sanitize_shades(r)
         return r
 
-    # def get_shade_data(self, shade_id, update_battery_level=None, force_refresh=None):
-    #     url = self._get_shade_data(shade_id)
-    #     r = requests.get(url, params={"refresh": force_refresh}).json()
-    #     return r
-
-    # def move_blind(self, blind_id, position, positionkind):
-    #     """
-    #
-    #     :param blind_id:
-    #     :param position: value between 0 and 65535
-    #     :return:
-    #     """
-    #     url, dta = self._get_activate_blind_data(blind_id, position, positionkind)
-    #     r = requests.put(url, data=dta)
-    #     return r.json()
 
     def shade_factory(self, shadedata):
         _name = shadedata["name"]

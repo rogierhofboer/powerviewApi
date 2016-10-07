@@ -120,6 +120,18 @@ def to_powerview_position(percentage, base=MAXMOVEPOSITION):
     return value
 
 
+def get_positions(response):
+    try:
+        positions = response.get('shade').get('positions')
+        return positions
+    except AttributeError:
+        lgr.debug("No position feedback from blind ")
+        return False
+
+
+def normalize(self,position):
+    pass
+
 class BaseShade:
     def __init__(self, name, shade_id, shades_api_path):
         self.name = name
@@ -171,13 +183,15 @@ class BaseShadeType1(BaseShade):
         return {"shade": {"id": self.shade_id, "positions": {"posKind1": 1, "position1": position}}}
 
     def process_response(self, response):
-        _position_kind = response.get('shade').get('positions').get('posKind1')
-        _position = response.get('shade').get('positions').get('position1')
+        positions = get_positions(response)
+        if positions:
+            _position_kind = positions.get('posKind1')
+            _position = positions.get('position1')
 
-        if _position_kind == 1:
-            self.position1 = _position
-            self.position1_perc = to_percentage_position(_position)
-            lgr.debug("Blind positions: position1: {}".format(self.position1))
+            if _position_kind == 1:
+                self.position1 = _position
+                self.position1_perc = to_percentage_position(_position)
+                lgr.debug("Blind positions: position1: {}".format(self.position1))
 
 
 class BaseShadeType2(BaseShade):
@@ -227,24 +241,24 @@ class BaseShadeType2(BaseShade):
                               "positions": {"posKind1": 1, "position1": position}}}
 
     def process_response(self, response):
-        _position_kind = response.get('shade').get('positions').get('posKind1')
-        _position = response.get('shade').get('positions').get('position1')
+        positions = get_positions(response)
+        if positions:
+            _position_kind = positions.get('posKind1')
+            _position = positions.get('position1')
 
-        if _position_kind == 1:
-            self.position1 = _position
-            self.position1_perc = to_percentage_position(_position)
-            self.position2 = 0
-            self.position2_perc = 0
-            lgr.debug("Blind positions: position1: {}  position2: {}".
-                      format(self.position1, self.position2))
-        elif _position_kind == 3:
-            self.position1 = 0
-            self.position2 = _position
-            self.position2_perc = to_percentage_position(_position, base=MAXTILTPOSITION)
-            lgr.debug("Blind positions: position1: {}  position2: {}".
-                      format(self.position1, self.position2))
-        else:
-            lgr.debug("No position feedback from blind ")
+            if _position_kind == 1:
+                self.position1 = _position
+                self.position1_perc = to_percentage_position(_position)
+                self.position2 = 0
+                self.position2_perc = 0
+                lgr.debug("Blind positions: position1: {}  position2: {}".
+                          format(self.position1, self.position2))
+            elif _position_kind == 3:
+                self.position1 = 0
+                self.position2 = _position
+                self.position2_perc = to_percentage_position(_position, base=MAXTILTPOSITION)
+                lgr.debug("Blind positions: position1: {}  position2: {}".
+                          format(self.position1, self.position2))
 
 
 class BaseShadeType3(BaseShade):
@@ -260,6 +274,13 @@ class BaseShadeType3(BaseShade):
         self.position2_perc = 0
         self.pos2openposition = 0  # open meaning middle bar is at the top position.
         self.pos2closeposition = MAXMOVEPOSITION  # close meaning middle bar is at the bottom position.
+
+        # Bottom and middle bar have different coordinate spaces
+        # Bottom bar down is position at 0
+        # Middle bar down is position MAXMOVEPOSITION
+        # If normalize == True both bars are down at position MAXMOVEPOSITION
+        self.normalize=False
+
 
     def move1(self,position1,percentage=False):
         self.move(position1,None,percentage=percentage)
@@ -293,18 +314,20 @@ class BaseShadeType3(BaseShade):
                                         "posKind2": 2, "position2": position2}}}
 
     def process_response(self, response):
-        _position_kind = response.get('shade').get('positions').get('posKind1')
-        _position = response.get('shade').get('positions').get('position1')
+        positions = get_positions(response)
+        if positions:
+            _position_kind = positions.get('posKind1')
+            _position = positions.get('position1')
 
-        if _position_kind == 1:
-            self.position1 = _position
-            self.position1_perc = to_percentage_position(_position)
-            lgr.debug("Blind positions: position1: {}".format(self.position1))
+            if _position_kind == 1:
+                self.position1 = _position
+                self.position1_perc = to_percentage_position(_position)
+                lgr.debug("Blind positions: position1: {}".format(self.position1))
 
-        _position_kind2 = response.get('shade').get('positions').get('posKind2')
-        _position2 = response.get('shade').get('positions').get('position2')
+            _position_kind2 = positions.get('posKind2')
+            _position2 = positions.get('position2')
 
-        if _position_kind2 == 2:
-            self.position2 = _position2
-            self.position2_perc = to_percentage_position(_position2)
-            lgr.debug("Blind positions: position2: {}".format(self.position2))
+            if _position_kind2 == 2:
+                self.position2 = _position2
+                self.position2_perc = to_percentage_position(_position2)
+                lgr.debug("Blind positions: position2: {}".format(self.position2))
