@@ -4,9 +4,9 @@ Powerview api
 
 import requests
 
-from model.decode import decode_base64
-from model.powerviewbase import PowerViewBase
-from model.shades import ShadeType1, ShadeType3, ShadeType2
+from powerview_api.decode import decode_base64
+from powerview_api.powerviewbase import PowerViewBase
+from powerview_api.shades import ShadeType1, ShadeType3, ShadeType2
 
 __author__ = 'sander'
 

@@ -2,7 +2,7 @@ import json
 import logging
 import math
 
-from model.decode import decode_base64
+from powerview_api.decode import decode_base64
 
 JOG_DATA = json.dumps({"shade": {"motion": "jog"}})
 

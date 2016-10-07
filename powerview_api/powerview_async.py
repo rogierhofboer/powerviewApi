@@ -6,8 +6,8 @@ import logging
 
 import aiohttp
 
-from model.decode import decode_base64
-from model.powerviewbase import PowerViewBase
+from powerview_api.decode import decode_base64
+from powerview_api.powerviewbase import PowerViewBase
 
 __author__ = 'sander'
 lgr = logging.getLogger(__name__)

@@ -1,7 +1,7 @@
 import argparse
 import cmd
 
-from model.powerview import PowerView
+from powerview_api.powerview import PowerView
 
 
 class PV(cmd.Cmd):
