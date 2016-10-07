@@ -3,7 +3,7 @@ import json
 import logging
 import time
 
-from ..model import powerview
+from model import powerview
 
 WAIT_BETWEEN_SHADES=1
 logging.basicConfig(level=logging.DEBUG)
