@@ -1,8 +1,7 @@
 import argparse
 import json
 import time
-
-from powerview import PowerView
+from .. import powerview
 import logging
 WAIT_BETWEEN_SHADES=1
 logging.basicConfig(level=logging.DEBUG)
@@ -22,7 +21,7 @@ if __name__ == "__main__":
     ip = js['pv_hub_ip']
     cycletime = js['cycletime']
 
-    pv = PowerView(ip)
+    pv = powerview.PowerView(ip)
     pv.define_all_shades()
     _shades = []
     for _shade_id in shade_ids:
