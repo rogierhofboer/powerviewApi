@@ -25,6 +25,11 @@ class PV(cmd.Cmd):
             return False
         return shade
 
+    def do_jog(self,shade_id):
+        shade = self.get_shade(shade_id)
+        if shade:
+            shade.jog()
+
     def do_get_shades(self, arg):
         self.pv.define_all_shades()
         for shade in self.pv.all_shades:
@@ -35,6 +40,15 @@ class PV(cmd.Cmd):
         if shade:
             shade.open()
 
+    def do_open2_shade(self,shade_id):
+        shade = self.get_shade(shade_id)
+        if shade:
+            shade.open2()
+
+    def do_close_shade(self,shade_id):
+        shade = self.get_shade(shade_id)
+        if shade:
+            shade.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -19,7 +19,6 @@ class PowerView(PowerViewBase):
 
     def __init__(self, ip_address):
         PowerViewBase.__init__(self, ip_address)
-        # self.pvb = PowerViewBase(ip_address)
 
     def get_user_data(self):
         """gets user data"""
@@ -46,7 +45,7 @@ class PowerView(PowerViewBase):
           ]
         }
         """
-        _room_data = requests.get(self.pvb.rooms_path).json()
+        _room_data = requests.get(self._rooms_path).json()
         for room in _room_data["roomData"]:
             room["name"] = decode_base64(room["name"])
         return _room_data

@@ -33,7 +33,6 @@ def gett(function):
 class ShadeType1(BaseShadeType1):
     def __init__(self, name, shade_id, shades_api_path):
         BaseShadeType1.__init__(self, name, shade_id, shades_api_path)
-        self.update()
 
     def jog(self):
         jog(self.shade_api_path)
@@ -50,7 +49,6 @@ class ShadeType1(BaseShadeType1):
 class ShadeType2(BaseShadeType2):
     def __init__(self, name, shade_id, shades_api_path):
         BaseShadeType2.__init__(self, name, shade_id, shades_api_path)
-        self.update()
 
     @gett
     def update(self):
@@ -64,7 +62,6 @@ class ShadeType2(BaseShadeType2):
 class ShadeType3(BaseShadeType3):
     def __init__(self, name, shade_id, shades_api_path):
         BaseShadeType3.__init__(self, name, shade_id, shades_api_path)
-        self.update()
 
     @gett
     def update(self):
