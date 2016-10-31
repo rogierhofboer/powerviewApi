@@ -129,14 +129,16 @@ def get_positions(response):
         return False
 
 
-def normalize(self,position):
+def normalize(self, position):
     pass
 
+
 class BaseShade:
-    def __init__(self, name, shade_id, shades_api_path):
-        self.name = name
-        self.shade_id = shade_id
-        self.shade_api_path = "{}/{}".format(shades_api_path, shade_id)
+    def __init__(self, shades_api_path, shade_data):
+        self.name = shade_data['name']
+        self.shade_id = shade_data['id']
+        self.shade_type = shade_data['type']
+        self.shade_api_path = "{}/{}".format(shades_api_path, self.shade_id)
         self.pos1openposition = MAXMOVEPOSITION
         self.pos1closeposition = 0
         self.base = max(self.pos1openposition, self.pos1closeposition)
@@ -169,13 +171,13 @@ class BaseShadeType1(BaseShade):
     A basic "up" down "shade"
     """
 
-    def __init__(self, name, shade_id, shades_api_path):
-        BaseShade.__init__(self, name, shade_id, shades_api_path)
+    def __init__(self, shades_api_path, shade_data):
+        BaseShade.__init__(self, shades_api_path, shade_data)
         self.position1 = 0
         self.position1_perc = 0
 
-    def move1(self,position1,percentage=False):
-        self.move(position1,percentage=percentage)
+    def move1(self, position1, percentage=False):
+        self.move(position1, percentage=percentage)
 
     def _get_move_data(self, position, percentage=False):
         if percentage:
@@ -199,8 +201,8 @@ class BaseShadeType2(BaseShade):
     A tilt at the bottom type of shade.
     """
 
-    def __init__(self, name, shade_id, shades_api_path):
-        BaseShade.__init__(self, name, shade_id, shades_api_path)
+    def __init__(self, shades_api_path, shade_data):
+        BaseShade.__init__(self, shades_api_path, shade_data)
         self.position1 = 0  # the movement position
         self.position1_perc = 0
         self.position2 = 0  # the tilt position
@@ -208,25 +210,25 @@ class BaseShadeType2(BaseShade):
         self.tiltopenposition = MAXTILTPOSITION
         self.tiltcloseposition = 0
 
-    def move1(self,position1,percentage=False):
-        self.move(position1,None,percentage=percentage)
+    def move1(self, position1, percentage=False):
+        self.move(position1, None, percentage=percentage)
 
-    def move2(self,position2,percentage=False):
-        self.move(None,position2,percentage=percentage)
+    def move2(self, position2, percentage=False):
+        self.move(None, position2, percentage=percentage)
 
     def open(self):
-        self.move(self.pos1openposition,None)
+        self.move(self.pos1openposition, None)
 
     def close(self):
-        self.move(self.pos1closeposition,None)
+        self.move(self.pos1closeposition, None)
 
     def open2(self):
-        self.move(None,self.tiltopenposition)
+        self.move(None, self.tiltopenposition)
 
     def close2(self):
-        self.move(None,self.tiltcloseposition)
+        self.move(None, self.tiltcloseposition)
 
-    def move(self,position1,tilt,percentage=False):
+    def move(self, position1, tilt, percentage=False):
         raise NotImplemented
 
     def _get_move_data(self, position=None, tilt=None, percentage=False):
@@ -266,8 +268,8 @@ class BaseShadeType3(BaseShade):
     Like a top down bottom up shade
     """
 
-    def __init__(self, name, shade_id, shades_api_path):
-        BaseShade.__init__(self, name, shade_id, shades_api_path)
+    def __init__(self, shades_api_path, shade_data):
+        BaseShade.__init__(self, shades_api_path, shade_data)
         self.position1 = 0
         self.position1_perc = 0
         self.position2 = 0
@@ -279,26 +281,25 @@ class BaseShadeType3(BaseShade):
         # Bottom bar down is position at 0
         # Middle bar down is position MAXMOVEPOSITION
         # If normalize == True both bars are down at position MAXMOVEPOSITION
-        self.normalize=False
+        self.normalize = False
 
+    def move1(self, position1, percentage=False):
+        self.move(position1, None, percentage=percentage)
 
-    def move1(self,position1,percentage=False):
-        self.move(position1,None,percentage=percentage)
-
-    def move2(self,position2,percentage=False):
-        self.move(None,position2,percentage=percentage)
+    def move2(self, position2, percentage=False):
+        self.move(None, position2, percentage=percentage)
 
     def open(self):
-        self.move(self.pos1openposition,None)
+        self.move(self.pos1openposition, None)
 
     def close(self):
         self.move(self.pos1closeposition, None)
 
     def open2(self):
-        self.move(None,self.pos2openposition)
+        self.move(None, self.pos2openposition)
 
     def close2(self):
-        self.move(None,self.pos2closeposition)
+        self.move(None, self.pos2closeposition)
 
     def _get_move_data(self, position1=None, position2=None, percentage=False):
         if percentage:

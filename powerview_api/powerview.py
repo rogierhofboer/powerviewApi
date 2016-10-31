@@ -50,6 +50,9 @@ class PowerView(PowerViewBase):
             room["name"] = decode_base64(room["name"])
         return _room_data
 
+    def get_time(self):
+        pass
+
     def get_scenes(self):
         """get scenes
 
@@ -101,17 +104,17 @@ class PowerView(PowerViewBase):
 
 
     def shade_factory(self, shadedata):
-        _name = shadedata["name"]
-        _id = shadedata["id"]
+        # _name = shadedata["name"]
+        # _id = shadedata["id"]
         _type = shadedata["type"]
         if _type in self.type1_shades:
-            return ShadeType1(_name, _id, self._shades_path)
+            return ShadeType1(self._shades_path,shadedata)
         elif _type in self.type2_shades:
-            return ShadeType2(_name,_id,self._shades_path)
+            return ShadeType2(self._shades_path,shadedata)
         elif _type in self.type3_shades:
-            return ShadeType3(_name, _id, self._shades_path)
+            return ShadeType3(self._shades_path,shadedata)
         else:
-            return ShadeType1(_name, _id, self._shades_path)
+            return ShadeType1(self._shades_path,shadedata)
 
 if __name__ == "__main__":
     import pprint

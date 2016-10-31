@@ -11,9 +11,9 @@ def jog(shade_api_path):
 
 
 def putt(function):
-    def wrapper(*args,**kwargs):
+    def wrapper(*args, **kwargs):
         shade_api_path = args[0].shade_api_path
-        body = json.dumps(function(*args,**kwargs))
+        body = json.dumps(function(*args, **kwargs))
         response = requests.put(shade_api_path, data=body)
         args[0].process_response(response.json())
 
@@ -31,8 +31,8 @@ def gett(function):
 
 
 class ShadeType1(BaseShadeType1):
-    def __init__(self, name, shade_id, shades_api_path):
-        BaseShadeType1.__init__(self, name, shade_id, shades_api_path)
+    def __init__(self, shades_api_path, shade_data):
+        BaseShadeType1.__init__(self, shades_api_path, shade_data)
 
     def jog(self):
         jog(self.shade_api_path)
@@ -47,8 +47,8 @@ class ShadeType1(BaseShadeType1):
 
 
 class ShadeType2(BaseShadeType2):
-    def __init__(self, name, shade_id, shades_api_path):
-        BaseShadeType2.__init__(self, name, shade_id, shades_api_path)
+    def __init__(self, shades_api_path, shade_data):
+        BaseShadeType2.__init__(self, shades_api_path, shade_data)
 
     @gett
     def update(self):
@@ -60,13 +60,13 @@ class ShadeType2(BaseShadeType2):
 
 
 class ShadeType3(BaseShadeType3):
-    def __init__(self, name, shade_id, shades_api_path):
-        BaseShadeType3.__init__(self, name, shade_id, shades_api_path)
+    def __init__(self, shades_api_path, shade_data):
+        BaseShadeType3.__init__(self, shades_api_path, shade_data)
 
     @gett
     def update(self):
         return self.get_update_data()
 
     @putt
-    def move(self, position1, position2,percentage=False):
-        return self._get_move_data(position1, position2,percentage=percentage)
+    def move(self, position1, position2, percentage=False):
+        return self._get_move_data(position1, position2, percentage=percentage)

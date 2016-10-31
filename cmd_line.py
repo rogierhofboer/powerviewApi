@@ -7,7 +7,7 @@ from powerview_api.powerview import PowerView
 class PV(cmd.Cmd):
     intro = "Welcome"
     prompt = "pv command: "
-
+    shadestring = "{:<8}{:<12}{}"
     def __init__(self, ip_address):
         cmd.Cmd.__init__(self)
         self.pv = PowerView(ip_address)
@@ -32,8 +32,9 @@ class PV(cmd.Cmd):
 
     def do_get_shades(self, arg):
         self.pv.define_all_shades()
+        print(PV.shadestring.format("ID","NAME","TYPE"))
         for shade in self.pv.all_shades:
-            print ("{:<8}{}".format(shade.shade_id,shade.name))
+            print (PV.shadestring.format(shade.shade_id,shade.name,shade.shade_type))
 
     def do_open_shade(self,shade_id):
         shade = self.get_shade(shade_id)
