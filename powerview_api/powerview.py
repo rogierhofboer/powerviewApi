@@ -1,14 +1,36 @@
 """
 Powerview api
 """
+import json
 
 import requests
 
-from powerview_api.decode import decode_base64
 from powerview_api.powerviewbase import PowerViewBase
 from powerview_api.shades import ShadeType1, ShadeType3, ShadeType2
 
 __author__ = 'sander'
+
+
+def putt(function):
+    def wrapper(*args, **kwargs):
+        shade_api_path = args[0].shade_api_path
+        body = json.dumps(function(*args, **kwargs))
+        response = requests.put(shade_api_path, data=body)
+        args[0].process_response(response.json())
+
+    return wrapper
+
+
+def gett(function):
+    def wrapper(*args, **kwargs):
+        # shade_api_path = args[0].shade_api_path
+        url, params = function(*args)
+        response = requests.get(url, params)
+        _json = response.json()
+        return function.__self__.process_response(_json)
+        # slr.process_response(_json)
+
+    return wrapper
 
 
 class PowerView(PowerViewBase):
@@ -17,73 +39,8 @@ class PowerView(PowerViewBase):
     unique ip address
     """
 
-    def __init__(self, ip_address):
-        PowerViewBase.__init__(self, ip_address)
-
-    def get_user_data(self):
-        """gets user data"""
-        response = requests.get(self._user_path).json()
-        self.sanitize_user_data(response)
-        return response
-
-    def get_rooms(self):
-        """
-        gets room data
-
-        returns a dict:
-        {
-          "roomIds":[64902],
-          "roomData":[
-            {
-              "id":64902,
-              "name":"<roomname>",
-              "order":0,
-              "colorId":6,
-              "iconId":0,
-              "order":0
-            }
-          ]
-        }
-        """
-        _room_data = requests.get(self._rooms_path).json()
-        for room in _room_data["roomData"]:
-            room["name"] = decode_base64(room["name"])
-        return _room_data
-
-    def get_time(self):
-        pass
-
-    def get_scenes(self):
-        """get scenes
-
-        returns a dict:
-        {
-          "sceneIds":[7214,64073,15890,42747],
-          "sceneData":[
-            {
-              "id":7214,
-              "name":"QWxsIGRvd24=",
-              "roomId":64902,
-              "order":0,
-              "colorId":2,
-              "iconId":0
-            }
-          ]
-        }
-        """
-        response = requests.get(self._scenes_path).json()
-        self.sanitize_scenes(response)
-        return response
-
-    def activate_scene(self, scene_id):
-        """
-
-        :param scene_id:
-         The id of the scene
-        :return:
-        """
-        _scene_path = self._get_activate_scene_data(scene_id)
-        requests.get(_scene_path)
+    def __init__(self, ip_address, get_wrapper, put_wrapper):
+        PowerViewBase.__init__(self, ip_address, get_wrapper, put_wrapper)
 
     # def jog_shade(self, shade_id):
     #     url, body = self._get_jog_data(shade_id)
@@ -92,41 +49,34 @@ class PowerView(PowerViewBase):
 
     def define_all_shades(self):
         shades = self.get_shades()
-        self.all_shades=[]
+        self.all_shades = []
         for shade in shades["shadeData"]:
             self.all_shades.append(self.shade_factory(shade))
 
-
-    def get_shades(self):
-        r = requests.get(self._shades_path).json()
-        self.sanitize_shades(r)
-        return r
-
-
     def shade_factory(self, shadedata):
-        # _name = shadedata["name"]
-        # _id = shadedata["id"]
         _type = shadedata["type"]
         if _type in self.type1_shades:
-            return ShadeType1(self._shades_path,shadedata)
+            return ShadeType1(self._shades_path, shadedata)
         elif _type in self.type2_shades:
-            return ShadeType2(self._shades_path,shadedata)
+            return ShadeType2(self._shades_path, shadedata)
         elif _type in self.type3_shades:
-            return ShadeType3(self._shades_path,shadedata)
+            return ShadeType3(self._shades_path, shadedata)
         else:
-            return ShadeType1(self._shades_path,shadedata)
+            return ShadeType1(self._shades_path, shadedata)
+
 
 if __name__ == "__main__":
     import pprint
 
-    pv = PowerView("192.168.0.106")
-    # pv = PowerView("192.168.2.4")
-    shades = pv.get_shades()
-    pprint.pprint(shades)
-    _shade = next((shade for shade in shades["shadeData"] if shade["id"] == 32653))
-    shade = pv.shade_factory(_shade)
-    #shade.close()
-    shade.move(None,shade.tiltcloseposition)
+    # pv = PowerView("192.168.0.106")
+    pv = PowerView("192.168.2.4", gett, putt)
+    userdata = pv.get_scenes()
+    pv.activate_scene(7247)
+    pprint.pprint(userdata)
+    # _shade = next((shade for shade in shades["shadeData"] if shade["id"] == 32653))
+    # shade = pv.shade_factory(_shade)
+    # #shade.close()
+    # shade.move(None,shade.tiltcloseposition)
 
     # shade = pv.shade_factory(shades["shadeData"][0])
     # shade.jog()

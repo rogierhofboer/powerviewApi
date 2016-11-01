@@ -8,45 +8,49 @@ JOG_DATA = json.dumps({"shade": {"motion": "jog"}})
 
 
 class PowerViewBase:
-    def __init__(self, ip_address):
+    def __init__(self, ip_address, get_wrapper, put_wrapper):
         self.ip_address = ip_address
         self._base_path = "http://{}/api".format(ip_address)
         self._scenes_path = "{}/scenes".format(self._base_path)
         self._shades_path = "{}/shades".format(self._base_path)
         self._rooms_path = "{}/rooms".format(self._base_path)
         self._user_path = "{}/userdata/".format(self._base_path)
+        self._times_path = "{}/times".format(self._base_path)
 
         self.type1_shades = [6]
         self.type2_shades = [23, 44]
         self.type3_shades = [8]
+        self.wrap(get_wrapper, put_wrapper)
 
-    def move_blind(self, blind_id, position, positionkind):
-        raise NotImplemented
+    def wrap(self, get_wrapper, put_wrapper):
+        self.get_user_data = get_wrapper(self.get_user_data)
+        self.get_shades = get_wrapper(self.get_shades)
+        self.get_rooms = get_wrapper(self.get_rooms)
+        self.get_time = get_wrapper(self.get_time)
+        self.get_scenes=get_wrapper(self.get_scenes)
+        self.activate_scene = get_wrapper(self.activate_scene)
 
     def get_user_data(self):
-        raise NotImplemented
+        return self._user_path, None
 
-    def jog_shade(self, shade_id):
-        raise NotImplemented
+    def get_time(self):
+        return self._times_path, None
 
     def get_shades(self):
-        raise NotImplemented
-
-    def get_shade_data(self):
-        raise NotImplemented
+        return self._shades_path, None
 
     def get_scenes(self):
-        raise NotImplemented
+        return self._scenes_path, None
 
     def activate_scene(self, scene_id):
-        raise NotImplemented
+        return self._scenes_path, {"sceneid": scene_id}
 
     def get_rooms(self):
-        raise NotImplemented
+        return self._rooms_path, None
 
-    def _get_activate_scene_data(self, scene_id):
-        _scene_path = "{}?sceneid={}".format(self._scenes_path, scene_id)
-        return _scene_path
+    # def _get_activate_scene_data(self, scene_id):
+    #     _scene_path = "{}?sceneid={}".format(self._scenes_path, scene_id)
+    #     return _scene_path
 
     def _get_blind_path_url(self, blind_id):
         url = "{}/{}".format(self._shades_path, blind_id)
@@ -59,31 +63,54 @@ class PowerViewBase:
         """
         return self._get_blind_path_url(shade_id), self._jog_body
 
-    def _get_position_body(self, position, blind_id, positionkind):
-        return json.dumps(
-            {"shade": {"id": blind_id, "positions": {"posKind1": positionkind, "position1": position}}})
+    # def _get_position_body(self, position, blind_id, positionkind):
+    #     return json.dumps(
+    #         {"shade": {"id": blind_id, "positions": {"posKind1": positionkind, "position1": position}}})
 
-    def _get_shade_data(self, shade_id):
-        return "{}/{}".format(self._shades_path, shade_id)
+    # def _get_shade_data(self, shade_id):
+    #     return "{}/{}".format(self._shades_path, shade_id)
 
-    def get_activate_blind_data(self, blind_id, position, positionkind):
-        url = self._get_blind_path_url(blind_id)
-        body = self._get_position_body(position, blind_id, positionkind)
-        return (url, body)
+    # def get_activate_blind_data(self, blind_id, position, positionkind):
+    #     url = self._get_blind_path_url(blind_id)
+    #     body = self._get_position_body(position, blind_id, positionkind)
+    #     return (url, body)
 
     def sanitize_shades(self, shades):
-        for shade in shades['shadeData']:
-            shade['name'] = decode_base64(shade.get('name', ''))
+        try:
+            for shade in shades['shadeData']:
+                shade['name'] = decode_base64(shade.get('name', ''))
+        except KeyError:
+            lgr.debug("no shade data available")
 
     def sanitize_scenes(self, scenes):
-        for scene in scenes['sceneData']:
-            scene['name'] = decode_base64(scene['name'])
+        try:
+            for scene in scenes['sceneData']:
+                scene['name'] = decode_base64(scene['name'])
+        except KeyError:
+            lgr.debug("no scene data available")
 
     def sanitize_user_data(self, userdata):
-        userdata["userData"]["hubName"] = decode_base64(userdata["userData"]["hubName"])
+        try:
+            userdata["userData"]["hubName"] = decode_base64(userdata["userData"]["hubName"])
+        except KeyError:
+            lgr.debug("no userdata available")
+
+    def sanitize_rooms(self, response):
+        try:
+            for room in response["roomData"]:
+                room["name"] = decode_base64(room["name"])
+        except KeyError:
+            lgr.debug("no roomdata available")
 
     def get_shade_class_name(self, shade_type):
         raise NotImplemented
+
+    def process_response(self, response):
+        self.sanitize_scenes(response)
+        self.sanitize_user_data(response)
+        self.sanitize_shades(response)
+        self.sanitize_rooms(response)
+        return response
 
 
 lgr = logging.getLogger(__name__)
