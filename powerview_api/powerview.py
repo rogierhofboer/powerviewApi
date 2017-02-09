@@ -44,17 +44,3 @@ if __name__ == "__main__":
     userdata = pv.get_scenes()
     pv.activate_scene(61722)
     pprint.pprint(userdata)
-    # _shade = next(
-    # (shade for shade in shades["shadeData"] if shade["id"] == 32653))
-    # shade = pv.shade_factory(_shade)
-    # #shade.close()
-    # shade.move(None,shade.tiltcloseposition)
-
-    # shade = pv.shade_factory(shades["shadeData"][0])
-    # shade.jog()
-    # shade.move(shade.pos1openposition,shade.pos2openposition)
-    # shade.open()
-    # shade.move2(1000)
-    # shade.move(1000,10000)
-    # pv.set_blind('7271',0,3)
-    # pprint.pprint(pv.get_shade_data('11155', force_refresh=True)['shade'])
