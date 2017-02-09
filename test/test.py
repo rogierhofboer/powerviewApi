@@ -1,4 +1,4 @@
-from powerview_api.powerviewbase import PowerViewBase
+from powerview_api.helpers.powerview_base import PowerViewBase
 
 
 def test_sanitize_shades():
